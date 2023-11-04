@@ -2,6 +2,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <sstream>
 
 bool isPrime(int number)
 {
@@ -21,17 +22,82 @@ bool isPrime(int number)
 long largestProductInAGrid(std::string grid)
 {
 
-    long sum = 0;
-    for (int i = 2; i < number; i++)
+    std::istringstream gridStringStream(grid);
+    std::vector<std::vector<int>> numberGrid = {};
+    int gridLength = 0;
+    int gridHeight = 0;
+
+    while(!gridStringStream.eof())
     {
-        if (isPrime(i))
+        std::string rowString;
+        std::getline(gridStringStream, rowString, '\n');
+        // std::cout << rowString << std::endl;
+        std::vector<int> numberRow = {};
+
+        std::istringstream rowStringStream(rowString);
+
+        while(!rowStringStream.eof())
         {
-            std::cout << i << std::endl;
-            sum += i;
-            std::cout <<sum << std::endl;
+            std::string numberString;
+            std::getline(rowStringStream, numberString, ' ');
+            numberRow.push_back(std::stoi(numberString));
+        }
+        gridLength = (int) numberRow.size();
+        numberGrid.push_back(numberRow);
+    }
+
+    gridHeight = (int) numberGrid.size();
+
+    long maxProduct = 0;
+    for (int i = 0; i < gridHeight; i++)
+    {
+        for (int j = 0; j < gridLength; j++)
+        {
+            // Horizontal row;
+            if (j <= gridLength - 4)
+            {
+                long product = numberGrid[i][j] * numberGrid[i][j+1] * numberGrid[i][j+2] * numberGrid[i][j+3];
+                if (product > maxProduct) 
+                {
+                    maxProduct = product;
+                }
+            }
+
+            // Vertical;
+            if (i <= gridHeight - 4)
+            {
+                long product = numberGrid[i][j] * numberGrid[i+1][j] * numberGrid[i+2][j] * numberGrid[i+3][j];
+                if (product > maxProduct) 
+                {
+                    maxProduct = product;
+                }
+            }
+
+            // Diagonal 1;
+            if (i <= gridHeight - 4 && j <= gridLength)
+            {
+                long product = numberGrid[i][j] * numberGrid[i+1][j+1] * numberGrid[i+2][j+2] * numberGrid[i+3][j+3];
+                if (product > maxProduct) 
+                {
+                    maxProduct = product;
+                }
+            }
+
+            // Diagonal 2;
+            if (i <= gridHeight - 4 && j <= gridLength)
+            {
+                long product = numberGrid[i+3][j] * numberGrid[i+2][j+1] * numberGrid[i+1][j+2] * numberGrid[i][j+3];
+                if (product > maxProduct) 
+                {
+                    maxProduct = product;
+                }
+            }
         }
     }
-    return sum;
+
+    
+    return maxProduct;
+
 }
 
 int main()
@@ -60,6 +126,6 @@ int main()
         "01 70 54 71 83 51 54 69 16 92 33 48 61 43 52 01 89 19 67 48"
     };
 
-    std::cout << "Largest Product in a grid: " << largestProductInAGrid(number) << std::endl;
+    std::cout << "Largest Product in a grid: " << largestProductInAGrid(grid) << std::endl;
     return 0;
 }
